@@ -22,12 +22,18 @@ $requestURL="http://www.blogger.com/feeds/{$blogID}/posts/default";-->
             }
         </style>
         <div class="alt">
-            <h1><iron-icon icon="icons:bookmark-border"></iron-icon> Latest post</h1>
+            <h1><iron-icon icon="icons:bookmark-border"></iron-icon> Latest post &amp; draft</h1>
         </div>
         <template is="dom-repeat" items="[[dataEntry]]">
             <div class="card">
-                <h1><a href="[[item.url]]">[[item.title]]</a></h1>
-                <p><iron-icon icon="icons:alarm"></iron-icon> [[item.published]]</p>
+                <h1>
+                    <iron-icon icon="[[item.icon]]"></iron-icon>
+                    <a href="[[item.url]]" target="[[item.hrefTarget]]">[[item.title]]</a>
+                </h1>
+                <p>
+                    <iron-icon icon="icons:alarm"></iron-icon> [[item.published]]
+                    <iron-icon icon="icons:update"></iron-icon> [[item.updated]]
+                </p>
             </div>
         </template>
     </template>
@@ -52,22 +58,27 @@ $requestURL="http://www.blogger.com/feeds/{$blogID}/posts/default";-->
                 dataEntry: {
                     type: Array,
                     value: [
-                        { "title" : '', "url"   : '', "published" : '' },
-                        { "title" : '', "url"   : '', "published" : '' },
-                        { "title" : '', "url"   : '', "published" : '' },
-                        { "title" : '', "url"   : '', "published" : '' },
-                        { "title" : '', "url"   : '', "published" : '' },
-                        { "title" : '', "url"   : '', "published" : '' },
-                        { "title" : '', "url"   : '', "published" : '' },
-                        { "title" : '', "url"   : '', "published" : '' },
-                        { "title" : '', "url"   : '', "published" : '' },
-                        { "title" : '', "url"   : '', "published" : '' },
-                        { "title" : '', "url"   : '', "published" : '' },
-                        { "title" : '', "url"   : '', "published" : '' },
-                        { "title" : '', "url"   : '', "published" : '' },
-                        { "title" : '', "url"   : '', "published" : '' },
-                        { "title" : '', "url"   : '', "published" : '' },
-                        { "title" : '', "url"   : '', "published" : '' }
+                        { "icon" : '', "hrefTarget" : '', "title" : '', "url"   : '', "published" : '', "updated" : '' },
+                        { "icon" : '', "hrefTarget" : '', "title" : '', "url"   : '', "published" : '', "updated" : '' },
+                        { "icon" : '', "hrefTarget" : '', "title" : '', "url"   : '', "published" : '', "updated" : '' },
+                        { "icon" : '', "hrefTarget" : '', "title" : '', "url"   : '', "published" : '', "updated" : '' },
+                        { "icon" : '', "hrefTarget" : '', "title" : '', "url"   : '', "published" : '', "updated" : '' },
+                        { "icon" : '', "hrefTarget" : '', "title" : '', "url"   : '', "published" : '', "updated" : '' },
+                        { "icon" : '', "hrefTarget" : '', "title" : '', "url"   : '', "published" : '', "updated" : '' },
+                        { "icon" : '', "hrefTarget" : '', "title" : '', "url"   : '', "published" : '', "updated" : '' },
+                        { "icon" : '', "hrefTarget" : '', "title" : '', "url"   : '', "published" : '', "updated" : '' },
+                        { "icon" : '', "hrefTarget" : '', "title" : '', "url"   : '', "published" : '', "updated" : '' },
+                        { "icon" : '', "hrefTarget" : '', "title" : '', "url"   : '', "published" : '', "updated" : '' },
+                        { "icon" : '', "hrefTarget" : '', "title" : '', "url"   : '', "published" : '', "updated" : '' },
+                        { "icon" : '', "hrefTarget" : '', "title" : '', "url"   : '', "published" : '', "updated" : '' },
+                        { "icon" : '', "hrefTarget" : '', "title" : '', "url"   : '', "published" : '', "updated" : '' },
+                        { "icon" : '', "hrefTarget" : '', "title" : '', "url"   : '', "published" : '', "updated" : '' },
+                        { "icon" : '', "hrefTarget" : '', "title" : '', "url"   : '', "published" : '', "updated" : '' },
+                        { "icon" : '', "hrefTarget" : '', "title" : '', "url"   : '', "published" : '', "updated" : '' },
+                        { "icon" : '', "hrefTarget" : '', "title" : '', "url"   : '', "published" : '', "updated" : '' },
+                        { "icon" : '', "hrefTarget" : '', "title" : '', "url"   : '', "published" : '', "updated" : '' },
+                        { "icon" : '', "hrefTarget" : '', "title" : '', "url"   : '', "published" : '', "updated" : '' },
+                        { "icon" : '', "hrefTarget" : '', "title" : '', "url"   : '', "published" : '', "updated" : '' }
                     ]
                 },
             },
@@ -80,12 +91,26 @@ $requestURL="http://www.blogger.com/feeds/{$blogID}/posts/default";-->
                     success: function(xml) {
                         $(xml).find('entry').each(function(i, e){
                             var title = $(e).find('title').text();
-                            var urlPost = $(e).find('link').filter(function( index ) { return 4; })[4].href;
+                            var urlPostRaw = $(e).find('link').filter(function( index ) { return index; });
+                            var urlPost = $(urlPostRaw).attr("href");
                             var published = $(e).find('published').text();
+                            var updated = $(e).find('updated').text();
                             
-                            me.set('dataEntry.'+i+'.title', title);
-                            me.set('dataEntry.'+i+'.url', urlPost);
-                            me.set('dataEntry.'+i+'.published', published);
+                            if(urlPostRaw.length == 4){
+                                me.set('dataEntry.'+i+'.icon', "icons:done-all");
+                                me.set('dataEntry.'+i+'.hrefTarget', "_blank");
+                                me.set('dataEntry.'+i+'.title', title);
+                                me.set('dataEntry.'+i+'.url', urlPost);
+                                me.set('dataEntry.'+i+'.published', published);
+                                me.set('dataEntry.'+i+'.updated', updated);
+                            }else{
+                                me.set('dataEntry.'+i+'.icon', "icons:lock-outline");
+                                me.set('dataEntry.'+i+'.hrefTarget', "_self");
+                                me.set('dataEntry.'+i+'.title', title);
+                                me.set('dataEntry.'+i+'.url', "#thisDraft");
+                                me.set('dataEntry.'+i+'.published', published);
+                                me.set('dataEntry.'+i+'.updated', updated);
+                            }
                         });
                     }
                 });
