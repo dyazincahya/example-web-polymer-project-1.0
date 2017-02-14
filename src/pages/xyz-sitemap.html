@@ -1,0 +1,33 @@
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../styles/style-blog.html">
+
+<dom-module id="xyz-sitemap">
+    <template>
+        <style include="style-blog">
+            :host {
+                display: block;
+                padding: 10px;
+            }
+
+            code{
+                background-color: #ECEFF1;
+                color:#E91E63;
+                padding: 3px;
+                border-radius: 3px;
+            }
+        </style>
+
+        <div class="card">
+            <h1><iron-icon icon="icons:gesture"></iron-icon> sitemap</h1>
+            <p>
+                This is sitemap page
+            </p>
+        </div>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'xyz-sitemap'
+        });
+    </script>
+</dom-module>
