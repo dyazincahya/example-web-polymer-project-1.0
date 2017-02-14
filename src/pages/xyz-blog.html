@@ -1,34 +1,36 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<link rel="import" href="../shared-styles.html">
+
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
-<!--$blogID='2556722185382757751';
-$requestURL="http://www.blogger.com/feeds/{$blogID}/posts/default";-->
+<link rel="import" href="../../bower_components/vaadin-combo-box/vaadin-combo-box.html">
+
+<link rel="import" href="../styles/style-blog.html">
 <dom-module id="xyz-blog">
     <template>
-        <style include="shared-styles">
-            :host {
-                display: block;
-                padding: 10px;
-            }
+        <style include="style-blog"></style>
 
-            .alt{
-                padding-left: 16px;
-            }
+        <div class="altar">
+            <div class="altar-content">
+                <h1><iron-icon icon="icons:folder-open"></iron-icon> All my blog</h1>
+                <vaadin-combo-box
+                    on-change="_comboSelected"
+                    label="choose one of blog"
+                    selected-item="[[dataSelectedBlog]]"
+                    item-label-path="name"
+                    item-value-path="id"
+                    items="[[dataListBlog]]"></vaadin-combo-box>
+                <pre><iron-icon icon="icons:help-outline"></iron-icon> blog selected : [[dataSelectedBlog]]</pre>              
+            </div>
+        </div>
 
-            h1 a{
-                color: #333;
-                font-size: 18px;
-                text-decoration: none;
-            }
-        </style>
         <div class="alt">
             <h1><iron-icon icon="icons:bookmark-border"></iron-icon> Latest post &amp; draft</h1>
         </div>
+
         <template is="dom-repeat" items="[[dataEntry]]">
             <div class="card">
                 <h1>
                     <iron-icon icon="[[item.attr.icon]]"></iron-icon>
-                    <a href="[[item.url]]" target="[[item.attr.hrefTarget]]">[[item.title]]</a>
+                    <a href="[[item.url]]" target="[[item.attr.hrefTarget]]" class="url-post">[[item.title]]</a>
                 </h1>
                 <p>
                     <iron-icon icon="icons:alarm"></iron-icon> [[item.published]]
@@ -65,6 +67,26 @@ $requestURL="http://www.blogger.com/feeds/{$blogID}/posts/default";-->
                         return arrContainer;
                     }
                 },
+                dataListBlog: {
+                    type: Array,
+                    value: [
+                        { "id" : '2556722185382757751', "name" : 'www.kang-cahya.com' },
+                        { "id" : '2556722185382757751', "name" : 'perjalanan.kang-cahya.com' },
+                        { "id" : '2556722185382757751', "name" : 'tv.kang-cahya.com' },
+                    ]
+                },
+                dataSelectedBlog: {
+                    type: String,
+                    value: 'none'
+                },
+
+            },
+            _comboSelected: function(e){
+                if(e.target.value == "" || e.target.value == null){
+                    this.set("dataSelectedBlog", "none");
+                }else{
+                    this.set("dataSelectedBlog", e.target.value);
+                }
             },
             ready : function(){
                 var me = this;
