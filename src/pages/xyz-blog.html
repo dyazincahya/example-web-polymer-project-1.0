@@ -45,8 +45,7 @@
             properties: {
                 dataEntry: {
                     type: Array,
-                    value: function(e){
-                        console.log(e);
+                    value: function(){
                         var totalRow = 21,
                             arrContainer = [];
 
@@ -74,7 +73,7 @@
                         { "id" : '3192608950474468796', "name" : 'copas.kang-cahya.com' },
                         { "id" : '6335012301038944480', "name" : 'kiliah.kang-cahya.com' },
                         { "id" : '1415152289005962738', "name" : 'perjalanan.kang-cahya.com' },
-                        { "id" : '1242185788910194006', "name" : 'tv.kang-cahya.com' },
+                        { "id" : '1242185788910194006', "name" : 'tv.kang-cahya.com' }
                     ]
                 },
                 dataSelectedBlog: {
@@ -85,9 +84,6 @@
                     type: Number,
                     value: 20
                 }
-            },
-            _returnTotalRow: function(){
-                return this.dataTotalRow;
             },
             _comboSelected: function(e){
                 if(e.target.value == "" || e.target.value == null){
@@ -111,10 +107,10 @@
                     url: "https://www.blogger.com/feeds/"+id+"/posts/default",
                     dataType: "jsonp",
                     success: function(xml) {
-                        var totalEl = $(xml).find('entry').length;
+                        /*var totalEl = $(xml).find('entry').length;
                         if(totalEl > 20){
 
-                        }
+                        }*/
                         // console.log(totalEl);
                         $(xml).find('entry').each(function(i, e){
                             var title = $(e).find('title').text();
