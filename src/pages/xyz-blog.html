@@ -16,7 +16,7 @@
                     label="choose one of blog"
                     item-label-path="name"
                     item-value-path="id"
-                    items="[[dataListBlog]]"></vaadin-combo-box>
+                    items="{{dataListBlog}}"></vaadin-combo-box>
                 <pre><iron-icon icon="icons:help-outline"></iron-icon> blog id selected : [[dataSelectedBlog]]</pre>              
             </div>
         </div>
@@ -25,7 +25,7 @@
             <h1><iron-icon icon="icons:bookmark-border"></iron-icon> Latest post &amp; draft</h1>
         </div>
 
-        <template is="dom-repeat" items="[[dataEntry]]">
+        <template is="dom-repeat" items="{{dataEntry}}">
             <div class="card">
                 <h1>
                     <iron-icon icon="[[item.attr.icon]]"></iron-icon>
@@ -45,11 +45,12 @@
             properties: {
                 dataEntry: {
                     type: Array,
+                    notify: true,
                     value: function(){
-                        var totalRow = 21,
+                        var totalRow = this._returnTotalRow(),
                             arrContainer = [];
-
-                        for(var i=0; i<=totalRow; i++){
+                        
+                        for(var i=1; i<=totalRow; i++){
                             arrContainer.push(
                                 { 
                                     "title" : '', 
@@ -81,9 +82,12 @@
                     value: 'none'
                 },
                 dataTotalRow: {
-                    type: Number,
-                    value: 20
+                    type: Number
                 }
+            },
+            _returnTotalRow: function(){
+                this.set("dataTotalRow", 21);
+                return this.dataTotalRow;
             },
             _comboSelected: function(e){
                 if(e.target.value == "" || e.target.value == null){
@@ -107,12 +111,13 @@
                     url: "https://www.blogger.com/feeds/"+id+"/posts/default",
                     dataType: "jsonp",
                     success: function(xml) {
-                        /*var totalEl = $(xml).find('entry').length;
-                        if(totalEl > 20){
+                        var totalEl = $(xml).find('entry').length;
+                        if(totalEl < 21){
+                            me.set("dataTotalRow", totalEl);
+                        }
 
-                        }*/
-                        // console.log(totalEl);
                         $(xml).find('entry').each(function(i, e){
+                            
                             var title = $(e).find('title').text();
                             var urlPostRaw = $(e).find('link').filter(function( index ) { return index; });
                             var urlPost = $(urlPostRaw).attr("href");
