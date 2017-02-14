@@ -14,11 +14,10 @@
                 <vaadin-combo-box
                     on-change="_comboSelected"
                     label="choose one of blog"
-                    selected-item="[[dataSelectedBlog]]"
                     item-label-path="name"
                     item-value-path="id"
                     items="[[dataListBlog]]"></vaadin-combo-box>
-                <pre><iron-icon icon="icons:help-outline"></iron-icon> blog selected : [[dataSelectedBlog]]</pre>              
+                <pre><iron-icon icon="icons:help-outline"></iron-icon> blog id selected : [[dataSelectedBlog]]</pre>              
             </div>
         </div>
 
@@ -46,7 +45,8 @@
             properties: {
                 dataEntry: {
                     type: Array,
-                    value: function(){
+                    value: function(e){
+                        console.log(e);
                         var totalRow = 21,
                             arrContainer = [];
 
@@ -71,30 +71,51 @@
                     type: Array,
                     value: [
                         { "id" : '2556722185382757751', "name" : 'www.kang-cahya.com' },
-                        { "id" : '2556722185382757751', "name" : 'perjalanan.kang-cahya.com' },
-                        { "id" : '2556722185382757751', "name" : 'tv.kang-cahya.com' },
+                        { "id" : '3192608950474468796', "name" : 'copas.kang-cahya.com' },
+                        { "id" : '6335012301038944480', "name" : 'kiliah.kang-cahya.com' },
+                        { "id" : '1415152289005962738', "name" : 'perjalanan.kang-cahya.com' },
+                        { "id" : '1242185788910194006', "name" : 'tv.kang-cahya.com' },
                     ]
                 },
                 dataSelectedBlog: {
                     type: String,
                     value: 'none'
                 },
-
+                dataTotalRow: {
+                    type: Number,
+                    value: 20
+                }
+            },
+            _returnTotalRow: function(){
+                return this.dataTotalRow;
             },
             _comboSelected: function(e){
                 if(e.target.value == "" || e.target.value == null){
                     this.set("dataSelectedBlog", "none");
                 }else{
                     this.set("dataSelectedBlog", e.target.value);
+                    this._runAjax(this.dataSelectedBlog);
                 }
             },
-            ready : function(){
+            _ifNull: function(data){
+                if(data == null || data == "" || data == "null"){
+                    return "empty text!";
+                }else{
+                    return data;
+                }
+            },
+            _runAjax: function(id="2556722185382757751"){
                 var me = this;
                 $.ajax({
                     type: "GET",
-                    url: "https://www.blogger.com/feeds/2556722185382757751/posts/default",
+                    url: "https://www.blogger.com/feeds/"+id+"/posts/default",
                     dataType: "jsonp",
                     success: function(xml) {
+                        var totalEl = $(xml).find('entry').length;
+                        if(totalEl > 20){
+
+                        }
+                        // console.log(totalEl);
                         $(xml).find('entry').each(function(i, e){
                             var title = $(e).find('title').text();
                             var urlPostRaw = $(e).find('link').filter(function( index ) { return index; });
@@ -103,7 +124,7 @@
                             var updated = $(e).find('updated').text();
                             
                             if(urlPostRaw.length == 4){
-                                me.set('dataEntry.'+i+'.title', title);
+                                me.set('dataEntry.'+i+'.title', me._ifNull(title));
                                 me.set('dataEntry.'+i+'.url', urlPost);
                                 me.set('dataEntry.'+i+'.published', published);
                                 me.set('dataEntry.'+i+'.updated', updated);
@@ -111,7 +132,7 @@
                                 me.set('dataEntry.'+i+'.attr.icon', "icons:done-all");
                                 me.set('dataEntry.'+i+'.attr.hrefTarget', "_blank");
                             }else{
-                                me.set('dataEntry.'+i+'.title', title);
+                                me.set('dataEntry.'+i+'.title', me._ifNull(title));
                                 me.set('dataEntry.'+i+'.url', "#thisDraft");
                                 me.set('dataEntry.'+i+'.published', published);
                                 me.set('dataEntry.'+i+'.updated', updated);
@@ -122,6 +143,9 @@
                         });
                     }
                 });
+            },
+            ready : function(){
+                this._runAjax();
             }
         });
     </script>
