@@ -19,7 +19,8 @@
     "iron-icons": "PolymerElements/iron-icons#^1.2.0",
     "vaadin-combo-box": "vaadin/vaadin-combo-box#^1.2.0",
     "moment-element": "abdonrd/moment-element#^0.4.4",
-    "paper-spinner": "PolymerElements/paper-spinner#^1.2.1"
+    "paper-spinner": "PolymerElements/paper-spinner#^1.2.1",
+    "iron-image": "PolymerElements/iron-image#^1.2.5"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"
