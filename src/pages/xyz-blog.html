@@ -2,6 +2,7 @@
 
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/vaadin-combo-box/vaadin-combo-box.html">
+<link rel="import" href="../../bower_components/moment-element/moment-element.html">
 
 <link rel="import" href="../styles/style-blog.html">
 <dom-module id="xyz-blog">
@@ -20,23 +21,30 @@
                 <pre><iron-icon icon="icons:help-outline"></iron-icon> blog id selected : [[dataSelectedBlog]]</pre>              
             </div>
         </div>
-
-        <div class="alt">
+            
+        <!--<div class="alt">
             <h1><iron-icon icon="icons:bookmark-border"></iron-icon> Latest post &amp; draft</h1>
-        </div>
+        </div>-->
 
         <template is="dom-repeat" items="[[dataEntry]]">
             <div class="card">
                 <h1>
-                    <iron-icon icon="[[item.attr.icon]]"></iron-icon>
+                    <iron-icon icon="[[item.attr.icon]]" style="color: [[item.attr.color]];"></iron-icon>
                     <a href="[[item.url]]" target="[[item.attr.hrefTarget]]" class="url-post">[[item.title]]</a>
                 </h1>
                 <p>
-                    <iron-icon icon="icons:alarm"></iron-icon> [[item.published]]
-                    <iron-icon icon="icons:update"></iron-icon> [[item.updated]]
+                    <iron-icon icon="icons:alarm"></iron-icon> 
+                    <moment-element datetime="[[item.published]]" output-format="MMMM Do YYYY"></moment-element>
+                    &nbsp;
+                    <iron-icon icon="icons:event"></iron-icon> 
+                    <moment-element datetime="[[item.published]]" output-format="h:mm:ss a"></moment-element>
                 </p>
+                <span style="background-color:[[item.attr.color]]; padding:7px; color:#FFFFFF; border-radius:3px;">
+                    [[item.attr.badge]]
+                </span>
             </div>
         </template>
+
     </template>
 
     <script>
@@ -62,6 +70,20 @@
                     value: 'none'
                 }
             },
+            ___ifNull: function(data){
+                if(data == null || data == "" || data == "null"){
+                    return "no title!";
+                }else{
+                    return data;
+                }
+            },
+            ___isNull: function(data){
+                if(data.length == 0){
+                    return true;
+                }else{
+                    return false
+                }
+            },
             _comboSelected: function(e){
                 if(e.target.value == "" || e.target.value == null){
                     this.set("dataSelectedBlog", "none");
@@ -70,58 +92,63 @@
                     this._runAjax(this.dataSelectedBlog);
                 }
             },
-            _ifNull: function(data){
-                if(data == null || data == "" || data == "null"){
-                    return "no title!";
+            _runAjax: function(id=null){
+                if(id === null){
+                    this.set('dataEntry', []);
                 }else{
-                    return data;
+                    var me = this;
+                    $.ajax({
+                        type: "GET",
+                        url: "https://www.blogger.com/feeds/"+id+"/posts/default",
+                        dataType: "jsonp",
+                        success: function(xml) {
+                            me.set('dataEntry', []);
+
+                            $(xml).find('entry').each(function(i, e){
+                                
+                                var title = $(e).find('title').text();
+                                var urlPostRaw = $(e).find('link').filter(function( index ) { return index; });
+                                var urlPost = $(urlPostRaw).attr("href");
+                                var published = $(e).find('published').text();
+                                var updated = $(e).find('updated').text();
+                                var arrPost;
+
+                                if(urlPostRaw.length == 4){
+                                    arrPost = { 
+                                        "title" : me.___ifNull(title), 
+                                        "url"   : urlPost.replace("#comment-form","#gh-pages-kang-cahya"), 
+                                        "published" : published, 
+                                        "updated" : updated,
+                                        "attr" : {
+                                            "badge" : 'published',
+                                            "color" : '#3F51B5',
+                                            "hrefTarget" : '_blank',
+                                            "icon" : 'icons:done-all'
+                                        }
+                                    };
+                                }else{
+                                    arrPost = { 
+                                        "title" : me.___ifNull(title), 
+                                        "url"   : '#thisDraft', 
+                                        "published" : published, 
+                                        "updated" : updated,
+                                        "attr" : {
+                                            "badge" : 'draft',
+                                            "color" : '#424242',
+                                            "hrefTarget" : '_self',
+                                            "icon" : 'icons:lock-outline'
+                                        }
+                                    };
+                                }
+                                me.push('dataEntry', arrPost);
+                            });
+                        },
+                        error: function (xhr, ajaxOptions, thrownError) {
+                            alert(xhr.status);
+                            alert(thrownError);
+                        }
+                    });
                 }
-            },
-            _runAjax: function(id="2556722185382757751"){
-                var me = this;
-                $.ajax({
-                    type: "GET",
-                    url: "https://www.blogger.com/feeds/"+id+"/posts/default",
-                    dataType: "jsonp",
-                    success: function(xml) {
-                        me.set('dataEntry', []);
-
-                        $(xml).find('entry').each(function(i, e){
-                            
-                            var title = $(e).find('title').text();
-                            var urlPostRaw = $(e).find('link').filter(function( index ) { return index; });
-                            var urlPost = $(urlPostRaw).attr("href");
-                            var published = $(e).find('published').text();
-                            var updated = $(e).find('updated').text();
-                            var arrPost;
-
-                            if(urlPostRaw.length == 4){
-                                arrPost = { 
-                                    "title" : me._ifNull(title), 
-                                    "url"   : urlPost, 
-                                    "published" : published, 
-                                    "updated" : updated,
-                                    "attr" : {
-                                        "icon" : 'icons:done-all', 
-                                        "hrefTarget" : '_blank'
-                                    }
-                                };
-                            }else{
-                                arrPost = { 
-                                    "title" : me._ifNull(title), 
-                                    "url"   : '#thisDraft', 
-                                    "published" : published, 
-                                    "updated" : updated,
-                                    "attr" : {
-                                        "icon" : 'icons:lock-outline', 
-                                        "hrefTarget" : '_self'
-                                    }
-                                };
-                            }
-                            me.push('dataEntry', arrPost);
-                        });
-                    }
-                });
             },
             ready : function(){
                 this._runAjax();            
