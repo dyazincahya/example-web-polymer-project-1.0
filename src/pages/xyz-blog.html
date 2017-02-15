@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/vaadin-combo-box/vaadin-combo-box.html">
 <link rel="import" href="../../bower_components/moment-element/moment-element.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 
 <link rel="import" href="../styles/style-blog.html">
 <dom-module id="xyz-blog">
@@ -22,9 +23,9 @@
             </div>
         </div>
             
-        <!--<div class="alt">
-            <h1><iron-icon icon="icons:bookmark-border"></iron-icon> Latest post &amp; draft</h1>
-        </div>-->
+        <div id="spinner" class="loading-container" hidden$="[[!isLoading]]">
+            <paper-spinner active="[[isLoading]]"></paper-spinner>
+        </div>
 
         <template is="dom-repeat" items="[[dataEntry]]">
             <div class="card">
@@ -44,7 +45,7 @@
                 </span>
             </div>
         </template>
-
+        
     </template>
 
     <script>
@@ -68,8 +69,15 @@
                 dataSelectedBlog: {
                     type: String,
                     value: 'none'
+                },
+                isLoading: {
+                    type: Boolean,
+                    value: false
                 }
             },
+            observers: [
+                '_lockScroll(isLoading)'
+            ],
             ___ifNull: function(data){
                 if(data == null || data == "" || data == "null"){
                     return "no title!";
@@ -84,6 +92,13 @@
                     return false
                 }
             },
+            _lockScroll: function(isLoading) {
+                if (isLoading) {
+                     document.body.style.overflow = 'visible';
+                } else {
+                    document.body.style.overflow = 'hidden';
+                }
+            },
             _comboSelected: function(e){
                 if(e.target.value == "" || e.target.value == null){
                     this.set("dataSelectedBlog", "none");
@@ -94,8 +109,10 @@
             },
             _runAjax: function(id=null){
                 if(id === null){
+                    this.set('isLoading', false);
                     this.set('dataEntry', []);
                 }else{
+                    this.set('isLoading', true);
                     var me = this;
                     $.ajax({
                         type: "GET",
@@ -103,6 +120,7 @@
                         dataType: "jsonp",
                         success: function(xml) {
                             me.set('dataEntry', []);
+                            me.set('isLoading', false);
 
                             $(xml).find('entry').each(function(i, e){
                                 
@@ -142,10 +160,6 @@
                                 }
                                 me.push('dataEntry', arrPost);
                             });
-                        },
-                        error: function (xhr, ajaxOptions, thrownError) {
-                            alert(xhr.status);
-                            alert(thrownError);
                         }
                     });
                 }

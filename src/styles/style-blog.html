@@ -73,19 +73,19 @@
                 font-size: 22px;
             }
 
-            .is-empty{
+            .loading-container{
+                position: absolute;
+                left: 0;
+                right: 0;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
+                padding: 30px;
             }
 
-            .is-empty-text{
-                font-weight: bold; 
-                font-family:'Roboto','Noto',sans-serif;
-                font-size: 20px;
-                color: #333;
-                padding: 50px;
+            paper-spinner{
+                --paper-spinner-stroke-width: 8px;
             }
         </style>
     </template>

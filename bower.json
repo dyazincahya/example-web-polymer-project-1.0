@@ -18,7 +18,8 @@
     "polymer": "Polymer/polymer#^1.6.0",
     "iron-icons": "PolymerElements/iron-icons#^1.2.0",
     "vaadin-combo-box": "vaadin/vaadin-combo-box#^1.2.0",
-    "moment-element": "abdonrd/moment-element#^0.4.4"
+    "moment-element": "abdonrd/moment-element#^0.4.4",
+    "paper-spinner": "PolymerElements/paper-spinner#^1.2.1"
   },
   "devDependencies": {
     "web-component-tester": "^4.0.0"
