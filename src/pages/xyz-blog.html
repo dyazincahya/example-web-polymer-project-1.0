@@ -42,10 +42,10 @@
                     <a href="[[item.url]]" target="[[item.attr.hrefTarget]]" class="url-post">[[item.title]]</a>
                 </h1>
                 <p>
-                    <iron-icon icon="icons:alarm"></iron-icon> 
+                    <iron-icon icon="icons:event"></iron-icon> 
                     <moment-element datetime="[[item.published]]" output-format="MMMM Do YYYY"></moment-element>
                     &nbsp;
-                    <iron-icon icon="icons:event"></iron-icon> 
+                    <iron-icon icon="icons:alarm"></iron-icon> 
                     <moment-element datetime="[[item.published]]" output-format="h:mm:ss a"></moment-element>
                 </p>
                 <span style="background-color:[[item.attr.color]]; padding:7px; color:#FFFFFF; border-radius:3px;">
@@ -173,6 +173,7 @@
                 }
             },
             ready : function(){
+                this.set('isLoading', true);
                 this._runAjax();            
             } 
         });

@@ -48,25 +48,34 @@
         <template is="dom-repeat" items="[[dataRepo]]">
             <div class="card">
                 <h1>
-                    <!--<iron-icon icon="[[item.attr.icon]]" style="color: [[item.attr.color]];"></iron-icon>-->
-                    <a href="[[item.html_url]]" target="_blank" class="url-post">[[item.name]]</a>
+                    <iron-icon icon="icons:extension" style="color: #3F51B5;"></iron-icon>
+                    <a href="[[item.html_url]]" target="_blank" class="url-post">[[item.full_name]]</a>
+                    <span class="code pre small">[[item.default_branch]]</span>
                 </h1>
                 <p>
-                    <iron-icon icon="icons:alarm"></iron-icon> 
+                    <span class="pre">[[item.description]]</span>
+                </p>
+                <p>
+                    <iron-icon icon="icons:event"></iron-icon> 
                     <moment-element datetime="[[item.created_at]]" output-format="MMMM Do YYYY"></moment-element>
                     &nbsp;
-                    <iron-icon icon="icons:event"></iron-icon> 
+                    <iron-icon icon="icons:alarm"></iron-icon> 
                     <moment-element datetime="[[item.created_at]]" output-format="h:mm:ss a"></moment-element>
                 </p>
-                <span style="background-color:#E91E63; padding:7px; color:#FFFFFF; border-radius:3px;">
-                    watcher [[item.watchers_count]]
-                </span> &nbsp;
-                <span style="background-color:#009688; padding:7px; color:#FFFFFF; border-radius:3px;">
-                    star [[item.stargazers_count]]
-                </span> &nbsp;
-                <span style="background-color:#3F51B5; padding:7px; color:#FFFFFF; border-radius:3px;">
-                    fork [[item.forks_count]]
-                </span>
+                <div class="actions">
+                    <a class="github btn-watcher" href="[[item.html_url]]" target="_blank">
+                        <iron-icon icon="icons:visibility"></iron-icon>
+                        watcher [[item.watchers_count]]
+                    </a> &nbsp;
+                    <a class="github btn-star" href="[[item.html_url]]" target="_blank">
+                        <iron-icon icon="icons:star-border"></iron-icon>
+                        star [[item.stargazers_count]]
+                    </a> &nbsp;
+                    <a class="github btn-fork" href="[[item.html_url]]/fork" target="_blank">
+                        <iron-icon icon="icons:link"></iron-icon>
+                        fork [[item.forks_count]]
+                    </a>
+                </div>
             </div>
         </template>
 
@@ -84,7 +93,8 @@
                     type: Array,
                     value: [
                         { "name" : 'dyazincahya' },
-                        { "name" : 'k4ng' }
+                        { "name" : 'k4ng' },
+                        { "name" : 'Klikpedia' }
                     ]
                 },
                 dataSelectedUser: {
@@ -98,20 +108,6 @@
             observers: [
                 '_lockScroll(isLoading)'
             ],
-            ___ifNull: function(data){
-                if(data == null || data == "" || data == "null"){
-                    return "no title!";
-                }else{
-                    return data;
-                }
-            },
-            ___isNull: function(data){
-                if(data.length == 0){
-                    return true;
-                }else{
-                    return false
-                }
-            },
             _lockScroll: function(isLoading) {
                 if (isLoading) {
                      document.body.style.overflow = 'visible';
