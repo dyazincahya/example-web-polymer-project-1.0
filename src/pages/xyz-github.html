@@ -1,0 +1,131 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/vaadin-combo-box/vaadin-combo-box.html">
+<link rel="import" href="../../bower_components/moment-element/moment-element.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+
+<link rel="import" href="../styles/style-shared.html">
+<link rel="import" href="../styles/style-github.html">
+<dom-module id="xyz-github">
+    <template>
+        <style include="style-shared"></style>
+        <style include="style-github"></style>
+
+        <div class="altar">
+            <div class="altar-content">
+                <h1>
+                    <iron-image 
+                        style="width:32px; height:32px;" 
+                        sizing="contain"
+                        src="../../images/github.svg"></iron-image> Github
+                </h1>
+                <vaadin-combo-box
+                    on-change="_comboSelected"
+                    label="choose one of account"
+                    selected-item="[[dataSelectedUser]]"
+                    item-label-path="name"
+                    item-value-path="name"
+                    items="[[dataListUser]]"></vaadin-combo-box>
+                <pre><iron-icon icon="icons:help-outline"></iron-icon> account selected : <a href="https://github.com/[[dataSelectedUser]]" target="_blank">[[dataSelectedUser]]</a></pre>              
+            </div>
+        </div>
+
+        <iron-ajax
+            auto
+            url="https://api.github.com/users/{{dataSelectedUser}}/repos"
+            handle-as="json"
+            last-response="{{dataRepo}}"
+            loading="{{isLoading}}"
+            debounce-duration="300"></iron-ajax>
+            
+        <div id="spinner" class="loading-container" hidden$="[[!isLoading]]">
+            <paper-spinner active="[[isLoading]]"></paper-spinner>
+        </div>
+
+        <template is="dom-repeat" items="[[dataRepo]]">
+            <div class="card">
+                <h1>
+                    <!--<iron-icon icon="[[item.attr.icon]]" style="color: [[item.attr.color]];"></iron-icon>-->
+                    <a href="[[item.html_url]]" target="_blank" class="url-post">[[item.name]]</a>
+                </h1>
+                <p>
+                    <iron-icon icon="icons:alarm"></iron-icon> 
+                    <moment-element datetime="[[item.created_at]]" output-format="MMMM Do YYYY"></moment-element>
+                    &nbsp;
+                    <iron-icon icon="icons:event"></iron-icon> 
+                    <moment-element datetime="[[item.created_at]]" output-format="h:mm:ss a"></moment-element>
+                </p>
+                <span style="background-color:#E91E63; padding:7px; color:#FFFFFF; border-radius:3px;">
+                    watcher [[item.watchers_count]]
+                </span> &nbsp;
+                <span style="background-color:#009688; padding:7px; color:#FFFFFF; border-radius:3px;">
+                    star [[item.stargazers_count]]
+                </span> &nbsp;
+                <span style="background-color:#3F51B5; padding:7px; color:#FFFFFF; border-radius:3px;">
+                    fork [[item.forks_count]]
+                </span>
+            </div>
+        </template>
+
+    </template>
+
+    <script>
+        Polymer({
+            is: 'xyz-github',
+            properties: {
+                dataEntry: {
+                    type: Array,
+                    value: []
+                },
+                dataListUser: {
+                    type: Array,
+                    value: [
+                        { "name" : 'dyazincahya' },
+                        { "name" : 'k4ng' }
+                    ]
+                },
+                dataSelectedUser: {
+                    type: String
+                },
+                isLoading: {
+                    type: Boolean,
+                    value: false
+                }
+            },
+            observers: [
+                '_lockScroll(isLoading)'
+            ],
+            ___ifNull: function(data){
+                if(data == null || data == "" || data == "null"){
+                    return "no title!";
+                }else{
+                    return data;
+                }
+            },
+            ___isNull: function(data){
+                if(data.length == 0){
+                    return true;
+                }else{
+                    return false
+                }
+            },
+            _lockScroll: function(isLoading) {
+                if (isLoading) {
+                     document.body.style.overflow = 'visible';
+                } else {
+                    document.body.style.overflow = 'hidden';
+                }
+            },
+            _comboSelected: function(e){
+                if(e.target.value == "" || e.target.value == null){
+                    this.set("dataSelectedUser", "dyazincahya");
+                }else{
+                    this.set("dataSelectedUser", e.target.value);
+                }
+            }
+        });
+    </script>
+</dom-module>
